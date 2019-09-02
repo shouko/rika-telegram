@@ -55,9 +55,7 @@ bot.text(async (msg, reply, next) => {
     })
     resp.body = JSON.parse(resp.body)
     if (!resp.body.status || resp.body.status !== 'success') return next()
-    items = resp.body.data.result.items.map(e => e.media).filter(e => {
-      return !isGif || (isGif && e.endsWith('.gif'))
-    })
+    items = resp.body.data.result.items.map(e => e.media)
     cache.set(cacheKey, items)
   }
   let photoKeys = []
