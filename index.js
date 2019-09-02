@@ -40,25 +40,33 @@ bot.text(async (msg, reply, next) => {
   let keyword = matches[1]
   let ext = matches[2]
   let isGif = ext === 'gif'
-  let searchKeyword = keyword + (isGif ? ' gif' : '')
+  let cacheKey = keyword + (isGif ? ' gif' : '')
   let items
-  if (cache.has(searchKeyword)) {
-    items = cache.get(searchKeyword)
+  if (cache.has(cacheKey)) {
+    items = cache.get(cacheKey)
   } else {
     let resp = await rp({
-      url: `${config.images.apiPrefix}${encodeURIComponent(searchKeyword)}`,
+      url: `${config.images.apiPrefix}${encodeURIComponent(keyword)}${config.images.apiSuffix}${isGif ? config.images.gifOption : ""}`,
       'headers': {
         'User-Agent': config.images.uaString
-      }
+      },
+      resolveWithFullResponse: true,
+      simple: false
     })
-    resp = JSON.parse(resp)
-    if (!resp.status || resp.status != "success") return next()
-    items = resp.data.result.items.map(e => e.media).filter(e => {
+    resp.body = JSON.parse(resp.body)
+    if (!resp.body.status || resp.body.status !== 'success') return next()
+    items = resp.body.data.result.items.map(e => e.media).filter(e => {
       return !isGif || (isGif && e.endsWith('.gif'))
     })
-    cache.set(searchKeyword, items)
+    cache.set(cacheKey, items)
   }
-  let photoToSend = items[Math.floor(Math.random() * items.length)]
+  let photoKeys = []
+  for (let i = 0; i < items.length; i++) {
+    for (let j = 0; j < items.length - i; j++) {
+      photoKeys.push(i)
+    }
+  }
+  let photoToSend = items[photoKeys[Math.floor(Math.random() * photoKeys.length)]]
   if (isGif) {
     reply.video(photoToSend)
   } else {
