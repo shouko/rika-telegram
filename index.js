@@ -19,6 +19,8 @@ bot.command("alert", (msg, reply, next) => {
   setTimeout(() => reply.text(text), Number(seconds) * 1000)
 })
 
+bot.command("chatid", (msg, reply) => reply.text(msg.chat.id))
+
 bot.command("dcimg", (msg, reply, next) => {
   let dcPrefix = /http:\/\/dcimg.awalker.jp\/[^\/]+\//g
   let apiPrefix = config.dcimg.apiPrefix
