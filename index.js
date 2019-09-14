@@ -24,7 +24,7 @@ bot.command("dcimg", (msg, reply, next) => {
   let apiPrefix = config.dcimg.apiPrefix
   let [ dcUrl ] = msg.args(1)
   if (!dcPrefix.test(dcUrl)) return next()
-  reply.photo(dcUrl.replace(dcPrefix, apiPrefix))
+  reply.photo(dcUrl.replace(dcPrefix, apiPrefix) + '?tg.jpg')
   reply.then((err, sentMessage) => {
     if (err) console.error(err)
   })
